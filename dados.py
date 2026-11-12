@@ -50,3 +50,40 @@ df_consulta = pd.read_sql_query("""
 print(df_consulta)
 
 engine.dispose()
+
+
+
+
+
+
+
+
+
+
+
+
+# ---------- IPCA ----------
+url_ipca = f'https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados?formato=json&dataInicial={data_inicial}&dataFinal={data_final_hoje}'
+
+df_ipca = pd.read_json(url_ipca)
+df_ipca = df_ipca.rename(columns={"valor": "taxa_ipca"})
+df_ipca["data"] = pd.to_datetime(df_ipca["data"], dayfirst=True).dt.date
+
+
+def criar_ipca(engine):
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS ipca (
+                id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                data DATE NOT NULL,
+                taxa_ipca DOUBLE PRECISION NOT NULL
+            )
+        """))
+        conn.execute(text("TRUNCATE TABLE ipca"))
+
+
+criar_ipca(engine)
+
+df_ipca.to_sql("ipca", engine, if_exists="append", index=False)
+
+print(pd.read_sql_query("SELECT * FROM ipca ORDER BY data DESC LIMIT 5", engine))
