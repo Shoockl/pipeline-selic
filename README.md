@@ -21,3 +21,21 @@ API do Banco Central (SGS, série 1178)
 ## Tecnologias
 
 Python, pandas, SQLAlchemy, PostgreSQL, Streamlit.
+
+## Como rodar
+
+1. Clone o repositório e instale as dependências:
+   ```
+   pip install -r requirements.txt
+   ```
+2. Crie um banco PostgreSQL e um arquivo `.env` na raiz do projeto:
+   ```
+   DATABASE_URL=postgresql+psycopg2://usuario:senha@localhost:5432/nome_do_banco
+   ```
+3. Rode o pipeline para popular o banco:
+   ```
+   python dados.py
+   ```
+4. Abra o dashboard:
+   ```
+   streamlit run tela.py
